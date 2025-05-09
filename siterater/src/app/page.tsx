@@ -2,9 +2,24 @@
 
 import { useState } from 'react';
 
+interface RatingData {
+  status: number;
+  title: string;
+  images: number;
+  buttons: number;
+  designRating: number;
+  designFeedback: string;
+  seoRating: number;
+  seoFeedback: string;
+  contentRating: number;
+  contentFeedback: string;
+  overallRating: number;
+  overallFeedback: string;
+}
+
 const SiteRatingPage = () => {
   const [url, setUrl] = useState('');
-  const [ratingData, setRatingData] = useState<any>(null);
+  const [ratingData, setRatingData] = useState<RatingData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +46,7 @@ const SiteRatingPage = () => {
       } else {
         setError(data.error || 'Something went wrong');
       }
-    } catch (err) {
+    } catch (error) {
       setError('Failed to fetch data from the server');
     } finally {
       setLoading(false);
@@ -58,7 +73,7 @@ const SiteRatingPage = () => {
             Website Rating & Analysis
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Get instant insights about any website's design, SEO, and content quality
+            Get instant insights about any website&apos;s design, SEO, and content quality
           </p>
         </div>
         

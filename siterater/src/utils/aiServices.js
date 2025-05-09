@@ -1,12 +1,7 @@
 // utils/aiServices.js
-import { OpenAI } from 'openai';
 import { load } from 'cheerio';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// AI-based design rating
+// Function to get overall design rating from AI
 export async function getSiteRatingFromAI(url) {
   try {
     const response = await fetch(url);
@@ -40,7 +35,7 @@ export async function getSiteRatingFromAI(url) {
   }
 }
 
-// AI-based SEO analysis
+// Function to analyze SEO aspects
 export async function analyzeSEO(url) {
   try {
     const response = await fetch(url);
@@ -79,7 +74,7 @@ export async function analyzeSEO(url) {
   }
 }
 
-// AI-based content quality analysis
+// Function to analyze content quality
 export async function analyzeContent(content) {
   try {
     const $ = load(content);
@@ -113,26 +108,4 @@ export async function analyzeContent(content) {
     console.error('Content rating error:', error);
     return { rating: 5, feedback: "Unable to analyze content at this time." };
   }
-}
-
-// Helper functions to generate feedback based on ratings
-function getDesignFeedback(rating) {
-  if (rating >= 9) return "Excellent design with modern aesthetics, great visual hierarchy, and responsive layout.";
-  if (rating >= 7) return "Good design with clean layout and decent visual appeal. Some minor improvements possible.";
-  if (rating >= 5) return "Average design. Consider improving visual hierarchy and user experience.";
-  return "Design needs significant improvement. Focus on layout, responsiveness, and visual appeal.";
-}
-
-function getSEOFeedback(rating) {
-  if (rating >= 9) return "Outstanding SEO implementation with proper meta tags, structure, and optimization.";
-  if (rating >= 7) return "Good SEO practices in place. Some opportunities for improvement in meta tags and structure.";
-  if (rating >= 5) return "Basic SEO elements present. Consider enhancing meta descriptions and content structure.";
-  return "SEO needs attention. Focus on implementing basic SEO elements and improving content structure.";
-}
-
-function getContentFeedback(rating) {
-  if (rating >= 9) return "Exceptional content quality with clear messaging, good grammar, and engaging material.";
-  if (rating >= 7) return "Good content with clear communication and decent engagement. Minor improvements possible.";
-  if (rating >= 5) return "Average content quality. Consider improving clarity and engagement.";
-  return "Content needs improvement. Focus on clarity, grammar, and user engagement.";
 }
