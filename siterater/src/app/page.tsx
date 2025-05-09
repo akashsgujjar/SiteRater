@@ -46,7 +46,7 @@ const SiteRatingPage = () => {
       } else {
         setError(data.error || 'Something went wrong');
       }
-    } catch (error) {
+    } catch {
       setError('Failed to fetch data from the server');
     } finally {
       setLoading(false);
