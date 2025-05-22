@@ -83,7 +83,12 @@ Format the response as a JSON object with the following structure:
       response_format: { type: "json_object" }
     });
 
-    const analysis = JSON.parse(completion.choices[0].message.content) as WebsiteAnalysis;
+    const content = completion.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No response content from GPT');
+    }
+
+    const analysis = JSON.parse(content) as WebsiteAnalysis;
     return analysis;
   } catch (error) {
     console.error('Error analyzing website:', error);

@@ -3,11 +3,12 @@ import { analyzeWebsite } from '@/utils/gptAnalysis';
 
 export async function POST(request: Request) {
   try {
-    const { url } = await request.json();
+    const body = await request.json();
+    const url = body.url;
 
-    if (!url) {
+    if (!url || typeof url !== 'string') {
       return NextResponse.json(
-        { error: 'URL is required' },
+        { error: 'URL is required and must be a string' },
         { status: 400 }
       );
     }

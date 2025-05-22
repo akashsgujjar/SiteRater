@@ -57,7 +57,7 @@ export default function Home() {
             Website Rater
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Enter a URL to get an AI-powered analysis of the website's design, content, performance, accessibility, and SEO.
+            Enter a URL to get an AI-powered analysis of the website&apos;s design, content, performance, accessibility, and SEO.
           </p>
         </div>
 
