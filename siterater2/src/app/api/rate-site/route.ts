@@ -4,7 +4,7 @@ import { analyzeWebsite } from '@/utils/gptAnalysis';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const url = body.url;
+    const { url, mode = 'professional' } = body;
 
     if (!url || typeof url !== 'string') {
       return NextResponse.json(
@@ -13,16 +13,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch the website content
-    const response = await fetch(url);
-    const html = await response.text();
-
-    // Analyze the website
-    const analysis = await analyzeWebsite(url, html);
-
+    const analysis = await analyzeWebsite(url, mode);
     return NextResponse.json(analysis);
   } catch (error) {
-    console.error('Error in rate-site API:', error);
+    console.error('Error analyzing website:', error);
     return NextResponse.json(
       { error: 'Failed to analyze website' },
       { status: 500 }

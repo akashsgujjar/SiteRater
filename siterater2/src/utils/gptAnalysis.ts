@@ -19,61 +19,85 @@ interface WebsiteAnalysis {
   recommendations: string[];
 }
 
-export async function analyzeWebsite(url: string, html: string): Promise<WebsiteAnalysis> {
-  // Parse HTML using cheerio
-  const $ = cheerio.load(html);
-  
-  // Extract relevant information
-  const title = $('title').text();
-  const metaDescription = $('meta[name="description"]').attr('content') || '';
-  const headings = $('h1, h2, h3').map((_, el) => $(el).text()).get();
-  const links = $('a').map((_, el) => $(el).attr('href')).get();
-  const images = $('img').map((_, el) => ({
-    src: $(el).attr('src'),
-    alt: $(el).attr('alt')
-  })).get();
-
-  // Prepare the prompt for GPT
-  const prompt = `Analyze this website and provide a detailed rating:
-URL: ${url}
-Title: ${title}
-Meta Description: ${metaDescription}
-Headings: ${headings.join(', ')}
-Number of Links: ${links.length}
-Number of Images: ${images.length}
-
-Please provide:
-1. An overall score out of 100
-2. Individual scores for:
-   - Design (out of 100)
-   - Content (out of 100)
-   - Performance (out of 100)
-   - Accessibility (out of 100)
-   - SEO (out of 100)
-3. Detailed feedback
-4. Specific recommendations for improvement
-
-Format the response as a JSON object with the following structure:
-{
-  "overallScore": number,
-  "categories": {
-    "design": number,
-    "content": number,
-    "performance": number,
-    "accessibility": number,
-    "seo": number
-  },
-  "feedback": string,
-  "recommendations": string[]
-}`;
-
+export async function analyzeWebsite(url: string, mode: 'professional' | 'roast' = 'professional'): Promise<WebsiteAnalysis> {
   try {
+    // Fetch the website content
+    const response = await fetch(url);
+    const html = await response.text();
+    const $ = cheerio.load(html);
+
+    // Extract relevant information
+    const title = $('title').text();
+    const metaDescription = $('meta[name="description"]').attr('content') || '';
+    const headings = $('h1, h2, h3').map((_, el) => $(el).text()).get();
+    const images = $('img').length;
+    const links = $('a').length;
+    const textContent = $('body').text().trim();
+
+    const prompt = mode === 'professional' 
+      ? `Analyze this website professionally and provide constructive feedback:
+         URL: ${url}
+         Title: ${title}
+         Meta Description: ${metaDescription}
+         Number of Headings: ${headings.length}
+         Number of Images: ${images}
+         Number of Links: ${links}
+         
+         Please provide:
+         1. An overall score out of 100
+         2. Individual scores for design, content, performance, accessibility, and SEO
+         3. Detailed feedback focusing on strengths and areas for improvement
+         4. Specific, actionable recommendations
+         
+         Format the response as a JSON object with the following structure:
+         {
+           "overallScore": number,
+           "categories": {
+             "design": number,
+             "content": number,
+             "performance": number,
+             "accessibility": number,
+             "seo": number
+           },
+           "feedback": string,
+           "recommendations": string[]
+         }`
+      : `Roast this website in a funny but brutally honest way:
+         URL: ${url}
+         Title: ${title}
+         Meta Description: ${metaDescription}
+         Number of Headings: ${headings.length}
+         Number of Images: ${images}
+         Number of Links: ${links}
+         
+         Please provide:
+         1. An overall score out of 100 (be harsh but fair)
+         2. Individual scores for design, content, performance, accessibility, and SEO
+         3. A hilarious roast of the website's flaws and design choices
+         4. Funny but actually helpful suggestions for improvement
+         
+         Format the response as a JSON object with the following structure:
+         {
+           "overallScore": number,
+           "categories": {
+             "design": number,
+             "content": number,
+             "performance": number,
+             "accessibility": number,
+             "seo": number
+           },
+           "feedback": string,
+           "recommendations": string[]
+         }`;
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4-turbo-preview",
       messages: [
         {
           role: "system",
-          content: "You are a professional website analyst. Provide detailed, constructive feedback and specific recommendations for improvement."
+          content: mode === 'professional' 
+            ? "You are a professional website analyst providing constructive feedback."
+            : "You are a witty website critic who roasts websites in a funny but informative way."
         },
         {
           role: "user",
@@ -85,13 +109,12 @@ Format the response as a JSON object with the following structure:
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
-      throw new Error('No response content from GPT');
+      throw new Error('No content received from GPT');
     }
 
-    const analysis = JSON.parse(content) as WebsiteAnalysis;
-    return analysis;
+    return JSON.parse(content) as WebsiteAnalysis;
   } catch (error) {
-    console.error('Error analyzing website:', error);
-    throw new Error('Failed to analyze website');
+    console.error('Error in analyzeWebsite:', error);
+    throw error;
   }
 } 
