@@ -126,39 +126,68 @@ export default function Home() {
         {analysis && (
           <div className="mt-8 space-y-6">
             <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Overall Score: {analysis.overallScore}/100
-              </h2>
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  Overall Score
+                </h2>
+                <div className="relative inline-block">
+                  <div className="w-32 h-32 rounded-full border-8 border-indigo-100 flex items-center justify-center">
+                    <span className="text-4xl font-bold text-indigo-600">
+                      {analysis.overallScore}
+                    </span>
+                  </div>
+                  <div 
+                    className="absolute inset-0 rounded-full border-8 border-indigo-600"
+                    style={{
+                      clipPath: `polygon(50% 50%, 50% 0%, ${50 + (analysis.overallScore * 3.6)}% 0%, ${50 + (analysis.overallScore * 3.6)}% 100%, 50% 100%)`,
+                      transform: 'rotate(-90deg)'
+                    }}
+                  />
+                </div>
+              </div>
               
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 {Object.entries(analysis.categories).map(([category, score]) => (
-                  <div key={category} className="bg-gray-50 p-4 rounded-md">
-                    <h3 className="text-sm font-medium text-gray-500 capitalize">
-                      {category}
-                    </h3>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {score}/100
-                    </p>
+                  <div key={category} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="text-sm font-medium text-gray-700 capitalize">
+                        {category}
+                      </h3>
+                      <span className="text-lg font-bold text-indigo-600">
+                        {score}/100
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className="bg-indigo-600 h-2.5 rounded-full transition-all duration-500"
+                        style={{ width: `${score}%` }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {isRoastMode ? 'The Roast' : 'Feedback'}
+              <div className="space-y-6">
+                <div className="bg-indigo-50 p-6 rounded-lg">
+                  <h3 className="text-xl font-semibold text-indigo-900 mb-3">
+                    {isRoastMode ? 'The Roast' : 'Detailed Feedback'}
                   </h3>
-                  <p className="text-gray-600">{analysis.feedback}</p>
+                  <p className="text-indigo-800 leading-relaxed">
+                    {analysis.feedback}
+                  </p>
                 </div>
 
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <div className="bg-white border border-gray-200 p-6 rounded-lg">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
                     {isRoastMode ? 'How to Not Get Roasted' : 'Recommendations'}
                   </h3>
-                  <ul className="list-disc list-inside space-y-2">
+                  <ul className="space-y-3">
                     {analysis.recommendations.map((recommendation, index) => (
-                      <li key={index} className="text-gray-600">
-                        {recommendation}
+                      <li key={index} className="flex items-start">
+                        <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-medium mr-3">
+                          {index + 1}
+                        </span>
+                        <span className="text-gray-700">{recommendation}</span>
                       </li>
                     ))}
                   </ul>
