@@ -32,7 +32,6 @@ export async function analyzeWebsite(url: string, mode: 'professional' | 'roast'
     const headings = $('h1, h2, h3').map((_, el) => $(el).text()).get();
     const images = $('img').length;
     const links = $('a').length;
-    const textContent = $('body').text().trim();
 
     const prompt = mode === 'professional' 
       ? `Analyze this website professionally and provide constructive feedback:
